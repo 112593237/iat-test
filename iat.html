@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>IAT - Gender Career</title>
+  <style>
+    body { font-family: sans-serif; text-align: center; margin-top: 100px; }
+    #stimulus { font-size: 48px; margin: 40px; }
+    #result { font-size: 24px; margin-top: 40px; }
+  </style>
+</head>
+<body>
+
+<h1>IAT 測驗：性別與職業聯結</h1>
+<div id="instruction">請按下對應鍵：<br>A = 女性或照顧職業<br>L = 男性或科技職業</div>
+<div id="stimulus"></div>
+<div id="result"></div>
+
+<script>
+const stimuli = [
+  // 組合 1：女性 + 照顧，男性 + 科技
+  { text: "Emily", type: "female", group: "left" },
+  { text: "Linda", type: "female", group: "left" },
+  { text: "John", type: "male", group: "right" },
+  { text: "David", type: "male", group: "right" },
+  { text: "Nurse", type: "care", group: "left" },
+  { text: "Teacher", type: "care", group: "left" },
+  { text: "Engineer", type: "tech", group: "right" },
+  { text: "Programmer", type: "tech", group: "right" },
+
+  // 組合 2：女性 + 科技，男性 + 照顧（反向）
+  { text: "Emily", type: "female", group: "right" },
+  { text: "Linda", type: "female", group: "right" },
+  { text: "John", type: "male", group: "left" },
+  { text: "David", type: "male", group: "left" },
+  { text: "Nurse", type: "care", group: "right" },
+  { text: "Teacher", type: "care", group: "right" },
+  { text: "Engineer", type: "tech", group: "left" },
+  { text: "Programmer", type: "tech", group: "left" },
+];
+
+let current = 0;
+let startTime = 0;
+let reactionTimes = [];
+
+function shuffle(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+}
+
+shuffle(stimuli);
+
+function showStimulus() {
+  if (current >= stimuli.length) {
+    const avg = Math.round(reactionTimes.reduce((a, b) => a + b) / reactionTimes.length);
+    document.getElementById("stimulus").textContent = "";
+    document.getElementById("instruction").textContent = "完成！";
+    document.getElementById("result").textContent = `你的平均反應時間：${avg} 毫秒`;
+    return;
+  }
+  document.getElementById("stimulus").textContent = stimuli[current].text;
+  startTime = performance.now();
+}
+
+document.addEventListener("keydown", function(e) {
+  if (e.key !== "a" && e.key !== "l") return;
+  const expected = stimuli[current].group === "left" ? "a" : "l";
+  if (e.key === expected) {
+    const rt = Math.round(performance.now() - startTime);
+    reactionTimes.push(rt);
+    current++;
+    showStimulus();
+  } else {
+    alert("錯誤！請再試一次！");
+  }
+});
+
+showStimulus();
+</script>
+
+</body>
+</html>
